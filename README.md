@@ -1,6 +1,3 @@
-# IoT - Prosta metoda zabezpieczenia danych w komunikacji - Protokół Zenoh: uwierzytelnianie użytkownik/hasło
-
-
 # Internet Przedmiotów - Protokół komunikacyjny Eclipse Zenoh: zabezpieczenie komunikacji uwierzytelnianiem użytkownik hasło
 ## Zenoh w pigułce
 
