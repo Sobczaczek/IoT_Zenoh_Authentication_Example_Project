@@ -1,0 +1,15 @@
+{
+  /// The node's mode (router, peer or client)
+  mode: "router",
+  transport: {
+    auth: {
+      /// The configuration of authentication.
+      usrpwd: {
+        user: "routerusername",
+        password: "routerpassword",
+        /// The path to a file containing the user password dictionary
+        dictionary_file: "credentials.txt",
+      },
+    },
+  },
+}

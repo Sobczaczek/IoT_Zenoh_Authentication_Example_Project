@@ -1,0 +1,14 @@
+{
+  /// The node's mode (router, peer or client)
+  mode: "client",
+  transport: {
+    auth: {
+      /// The configuration of authentication.
+      /// A password implies a username is required.
+      usrpwd: {
+        user: "clientusername",
+        password: "clientpassword",
+      },
+    },
+  },
+}
