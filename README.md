@@ -3,9 +3,6 @@
 
 # Internet Przedmiotów - Protokół komunikacyjny Eclipse Zenoh: zabezpieczenie komunikacji uwierzytelnianiem użytkownik hasło
 ## Zenoh w pigułce
-Python >= 3.7
-
-pip >= 19.3.1
 
 # Przygotowanie do zadania
 ## Wymagania
@@ -178,3 +175,50 @@ przez nieporządane osoby. Jak to działa?
 ## Skrypty w Python
 Tym razem uruchomimy skrypty z konfiguracją uwierzytelnienia oraz jeden skrypt pozbawiony konfiguracji, który
 będzie nam symulować nieporządanego podglądacza w systemie.
+
+1. Uruchom skrypt `z_pub.py`:
+    ```bash
+    python3 z_pub.py -c config_client_auth.json5
+    ```
+    Konsola powinna wyglądać tak:
+    ```bash
+    Opening session...
+    Declaring Publisher on 'demo/example/zenoh-python-pub'...
+    Putting Data ('demo/example/zenoh-python-pub': '[   0] Pub from Python!')...
+    Putting Data ('demo/example/zenoh-python-pub': '[   1] Pub from Python!')...
+    Putting Data ('demo/example/zenoh-python-pub': '[   2] Pub from Python!')...
+    ``` 
+
+2. Uruchom skrytp `z_sub.py`:
+    ```bash
+    python3 z_sub.py -c config_client_auth.json5
+    ```
+
+    Konsola powinna wyglądać tak:
+    ```bash
+    Opening session...
+    Declaring Subscriber on 'demo/example/**'...
+    Enter 'q' to quit...
+    >> [Subscriber] Received PUT ('demo/example/zenoh-python-pub': '[   0] Pub from Python!')
+    >> [Subscriber] Received PUT ('demo/example/zenoh-python-pub': '[   1] Pub from Python!')
+    >> [Subscriber] Received PUT ('demo/example/zenoh-python-pub': '[   2] Pub from Python!')
+    ```
+
+    Wyniki są takie same jak w przypadku uruchomienia bez dodatkowej konfiguracji. Różnica pojawia się, gdy uruchomimy kolejny skrypt `z_sub.py` bez konfiguracji.
+
+2. Uruchom skrypt `z_sub.py` w kolejnym terminalu:
+    ```bash
+    python3 z_sub.py
+    ```
+
+    Wynik:
+    ```bash
+    Enter 'q' to quit...
+    [2024-04-17T21:01:33Z ERROR zenoh_transport::unicast::establishment::open] Received a close message (reason GENERIC) in response to an InitSyn on: tcp/172.17.0.1:53452 => tcp/172.17.0.2:7447 at /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zenoh-transport-0.10.1-rc/src/unicast/establishment/open.rs:226.
+    [2024-04-17T21:01:35Z ERROR zenoh_transport::unicast::establishment::open] Received a close message (reason GENERIC) in response to an InitSyn on: tcp/172.17.0.1:53454 => tcp/172.17.0.2:7447 at /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zenoh-transport-0.10.1-rc/src/unicast/establishment/open.rs:226.
+    [2024-04-17T21:01:39Z ERROR zenoh_transport::unicast::establishment::open] Received a close message (reason GENERIC) in response to an InitSyn on: tcp/172.17.0.1:57760 => tcp/172.17.0.2:7447 at /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zenoh-transport-0.10.1-rc/src/unicast/establishment/open.rs:226.
+    ```
+
+    Widać przepływające komunikaty, jednak nie widać ich zawartości. Wszystko przez to że konfiguracja klienta nie zawiera potrzebnych do uwierzytelnienia danych.
+
+# Wnioski
