@@ -1,15 +1,23 @@
 # Internet Przedmiotów - Protokół komunikacyjny Eclipse Zenoh: zabezpieczenie komunikacji uwierzytelnianiem użytkownik hasło
 ## Zenoh w pigułce
 
+<img src="img/zenoh-dragon-500x543.png" alt="zenoh-dragon" width="200"/>
+
+**Zenoh** czyli w rozwinięciu *Zero Overhead Network Prtocol* **to protokół komunikacyjny ujednolicający dane w ruchu, dane w rest i obliczenia**. Łączy pub/sub/query z roproszoną geograficznie pamięcią masową, zapytnia i obliczenia ale zachowuje jednocześnie efektywność czasową oraz przestrznną. 
+
+### Zenoh w IoT
+Zenoh to jedyny protokół dostępny na rynku**, który umożliwia efektywną pracę i wydajność od serwerowego hardware i rozległych sieci do urządzeń takich jak mikrokontrolery i niezwykle ograniczone sieci.
+
+Więcej informacji pod: https://zenoh.io/docs/overview/what-is-zenoh/
+
+
 # Przygotowanie do zadania
 ## Wymagania
-- zainstalowany Docker do obsługi obrazów
-- zainstalowany Python3
+- klient Docker
+- Python w wersji min. 3.8
 - Python virtualenv
 
-## Przygotowanie
-1. Sklonowanie repozytorium do dowolnego folderu roboczego przygotowanego do realizacji zadania.
-
+1. W dowolnie wybranej lokalizacji przygotuj folder roboczy i sklonuj do niego repozytorium.
 
 # Zadanie 1 - komunikacja client-router-client bez zabezpieczeń
 ## Przygotowanie kontenera z Routerem Zenoh
@@ -38,7 +46,7 @@
     docker run -d --name zenoh_router zenohrouterimage
     ```
 
-4. Zweryfikuj uruchomienie kontenera się powiodło:
+4. Zweryfikuj czy uruchomienie kontenera się powiodło:
     ```bash
     docker ps -a
     ```
@@ -48,7 +56,7 @@
     CONTAINER ID   IMAGE              COMMAND            CREATED          STATUS                        PORTS       NAMES
     ------------   zenohrouterimage   "/entrypoint.sh"   17 seconds ago   Exited (255) 16 seconds ago               zenoh_router
     ```
-5. Wystartuj kontener:
+5. Wystartuj kontener (jeśli nie jest już uruchomiony):
     ```bash
     docker start zenoh_router
 
@@ -66,9 +74,9 @@
     ```
 ## Skrypty w Python
 Jedną z opcji przekazywania danych metodą pub/sub jest uruchomienie dwóch skryptów w języku Python. 
-Inne możliwości przewidują komunikację za pośrednictwem cmd lub skryptami w języku C dla mikrokontrolerów.
+Inne możliwości przewidują komunikację za pośrednictwem cmd lub skryptami w języku C dla mikrokontrolerów takich jak ESP32 lub STM32F7.
 W tym zadaniu zostały przygotowane dwa podstawowe skrypty w języku Python:
-- `z_pub.py` - jest producentem danych, publikuje na zdefiniownym `key expression` dane, które trafiają do routera w linii client<->router.
+- `z_pub.py` - jest producentem danych, publikuje na zdefiniownym `key expression` dane, które trafiają do routera w linii client<->router. 
 - `z_sub.py` - konsument danych, subskrybuje predefiniowany key expression i czeka na publikowane dane.
 
 1. Stwórz i uruchom środowisko `virtualenv`:
@@ -115,17 +123,17 @@ W tym zadaniu zostały przygotowane dwa podstawowe skrypty w języku Python:
     ```
 5. Obserwacje?
 Komunikacja działa, przykład zrobiony lokalnie, z uwzględnieniem routera uruchomionego na publicznym hoście
-oraz skrypty uruchomione z odpowiednimi parametrami wskazującymi na adres IP routera, umożliwiają komunikację,
+oraz skrypty uruchomione z odpowiednimi parametrami wskazującymi na adres routera, umożliwiają komunikację,
 pomiędzy różnymi urządzeniami poprzez sieć. Aktualnie komunikacja jest pozbawiona jakichkolwiek zabezpieczeń, więc
-każdy w sieci znając IP routera moze uruchomić taki skrypt i podglądać przepływające w systemie dane.
+każdy w sieci znając adres routera moze uruchomić taki skrypt i podglądać przepływające w systemie dane.
 
 # Zadanie 2 - komunikacja client-router-client: uwierzytelnianie użytkownik/hasło
-Jest to najprostsza forma zabezpieczenia komunikacji w Zenoh. Poprzez stworzenie listy par użytkownik:hasło,
+Jest to najprostsza forma zabezpieczenia komunikacji w Zenoh. Poprzez stworzenie listy par `użytkownik:hasło`,
 oraz uzwględnienie tych danych w konfiguracjach klientów oraz routera, może skutecznie zablokować odczyt danych
 przez nieporządane osoby. Jak to działa?
 
 ## Przygotowanie kontenera z Routerem Zenoh Auth
-1. Zatrzymujemy wcześniej uruchomiony Router aby zwolnić wykorzystywane przez Zenoh porty sieciowe. 
+1. Zatrzymuj wcześniej uruchomiony Router aby zwolnić wykorzystywane przez Zenoh porty sieciowe. 
     ```bash
     docker stop zenoh_router
     ```
@@ -219,3 +227,4 @@ będzie nam symulować nieporządanego podglądacza w systemie.
     Widać przepływające komunikaty, jednak nie widać ich zawartości. Wszystko przez to że konfiguracja klienta nie zawiera potrzebnych do uwierzytelnienia danych.
 
 # Wnioski
+Zastosowanie prostego mechanizmu uwierzytelniania umożliwiło zabezpiecznie komunikacji poprzez protokół Zenoh. Bez tego zabezpieczenia, dane można swobodnie podgląć, jeśli pozna się adres routera.
